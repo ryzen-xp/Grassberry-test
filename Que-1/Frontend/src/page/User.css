@@ -1,0 +1,131 @@
+/* Reset some default styles */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: #e9ecef; /* Light grey background */
+}
+
+/* Container for the entire component */
+.user-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff; /* White background */
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+h3 {
+  color: #495057; /* Dark grey */
+  margin: 20px 0 10px;
+}
+
+/* Inputs and buttons */
+input[type="text"],
+input[type="number"] {
+  width: calc(100% - 20px); /* Full width minus padding */
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ced4da; /* Light grey border */
+  border-radius: 4px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border: 1px solid #007bff; /* Blue border on focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Blue shadow on focus */
+}
+
+/* Buttons */
+button {
+  width: calc(50% - 10px); /* Adjust width to fit 2 buttons in a row with space */
+  padding: 10px;
+  background-color: #007bff; /* Blue background */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-bottom: 15px; /* Space below each button */
+  margin-right: 10px; /* Space between buttons in the same row */
+}
+
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.02); /* Slightly enlarge the button */
+}
+
+/* For disabled buttons */
+button:disabled {
+  background-color: #ccc; /* Grey out button */
+  cursor: not-allowed;
+}
+
+/* Status message */
+p {
+  margin: 10px 0;
+  color: #495057; /* Dark grey */
+  font-size: 14px;
+}
+
+/* Table styles */
+table {
+  width: 100%; /* Full width */
+  border-collapse: collapse; /* Remove space between borders */
+  margin: 20px 0; /* Space around tables */
+}
+
+/* Table headers */
+th {
+  background-color: #007bff; /* Blue background for headers */
+  color: white; /* White text */
+  padding: 10px;
+  text-align: left; /* Left align text */
+}
+
+/* Table cells */
+td {
+  padding: 10px;
+  border: 1px solid #dee2e6; /* Light border */
+  background-color: #f8f9fa; /* Light background for rows */
+}
+
+/* Alternate row colors */
+tbody tr:nth-child(even) td {
+  background-color: #e9ecef; /* Slightly darker for even rows */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+  input[type="text"],
+  input[type="number"],
+  button {
+    font-size: 14px; /* Smaller font on small screens */
+    width: 100%; /* Full width on small screens */
+    margin-right: 0; /* No right margin on small screens */
+  }
+
+  button {
+    margin-right: 0; /* No margin on right for buttons */
+    margin-bottom: 10px; /* Maintain space below buttons */
+  }
+}
+
+/* Optional styles for better visual hierarchy */
+div {
+  margin-bottom: 20px; /* Spacing between sections */
+  padding: 15px;
+  background-color: #f8f9fa; /* Light background for sections */
+  border-radius: 5px;
+  border: 1px solid #dee2e6; /* Light border */
+}
