@@ -8,7 +8,7 @@ export default function Home() {
       <h1>Welcome to Payment Manager</h1>
       <p>Select your role:</p>
       <button style={buttonStyle} onClick={() => navigate("/user")}>
-        User
+        Customer
       </button>
       <button style={buttonStyle} onClick={() => navigate("/merchant")}>
         Merchant

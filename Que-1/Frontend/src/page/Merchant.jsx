@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Web3 from "web3";
 import PaymentManagerABI from "../PaymentManagerABI.json";
 
@@ -13,31 +13,35 @@ function MerchantApp() {
 
   const contractAddress = "0xEf10733B04f01D9376d7499F467814866C65444F";
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        const web3Instance = new Web3(window.ethereum);
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
+  useEffect(() => {
+    const initializeWeb3 = async () => {
+      if (window.ethereum) {
+        try {
+          const web3Instance = new Web3(window.ethereum);
+          const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts",
+          });
 
-        setWeb3(web3Instance);
-        setAccount(accounts[0]);
+          setWeb3(web3Instance);
+          setAccount(accounts[0]);
 
-        const contractInstance = new web3Instance.eth.Contract(
-          PaymentManagerABI,
-          contractAddress
-        );
-        setContract(contractInstance);
+          const contractInstance = new web3Instance.eth.Contract(
+            PaymentManagerABI,
+            contractAddress
+          );
+          setContract(contractInstance);
 
-        await fetchTransactions(contractInstance);
-      } catch (error) {
-        console.error("Failed to connect wallet:", error);
+          await fetchTransactions(contractInstance);
+        } catch (error) {
+          console.error("Failed to connect wallet:", error);
+        }
+      } else {
+        alert("Please install MetaMask to use this dApp!");
       }
-    } else {
-      alert("Please install MetaMask to use this dApp!");
-    }
-  };
+    };
+
+    initializeWeb3();
+  }, []);
 
   const fetchTransactions = async (contractInstance) => {
     setLoading(true);
@@ -99,7 +103,8 @@ function MerchantApp() {
         <thead>
           <tr>
             <th>Transaction ID</th>
-            <th>User</th>
+            <th>Customer Address</th>
+            <th>Product ID</th>
             <th>Amount (ETH)</th>
             <th>State</th>
           </tr>
@@ -109,6 +114,7 @@ function MerchantApp() {
             <tr key={tx.id}>
               <td>{tx.id}</td>
               <td>{tx.user}</td>
+              <td>{tx.productId}</td>
               <td>{web3.utils.fromWei(tx.amount, "ether")}</td>
               <td>{getStatusLabel(tx.state)}</td>
             </tr>
@@ -119,14 +125,14 @@ function MerchantApp() {
   }, [transactions, loading, error, web3]);
 
   return (
-    <div>
-      <h2>Merchant Actions</h2>
-      {!account ? (
-        <button onClick={connectWallet}>Connect Wallet</button>
-      ) : (
+    <div className="merchant">
+      <h2>Merchant Interface</h2>
+      {account ? (
         <div>
-          <p>Connected Account: {account}</p>
+          <h3>Connected Account: {account}</h3>
         </div>
+      ) : (
+        <p>Connecting to MetaMask...</p>
       )}
       <div>
         <h3>Transaction Requests</h3>

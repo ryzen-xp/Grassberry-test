@@ -4,7 +4,7 @@ import PaymentManagerABI from "../PaymentManagerABI.json";
 import "./User.css";
 
 const User = () => {
-  const [transactionId, setTransactionId] = useState("");
+  // const [transactionId, setTransactionId] = useState("");
   const [productId, setProductId] = useState("");
   const [amount, setAmount] = useState("");
   const [merchantAddress, setMerchantAddress] = useState("");
@@ -15,7 +15,8 @@ const User = () => {
   const [loading, setLoading] = useState(false);
   const [transactions, setTransactions] = useState([]);
 
-  const [transactionStatus, setTransactionStatus] = useState("");
+  // const [transactionStatus, setTransactionStatus] = useState("");
+  const [deliveryTransactionId, setDeliveryTransactionId] = useState("");
   const contractAddress = "0xEf10733B04f01D9376d7499F467814866C65444F";
 
   useEffect(() => {
@@ -87,13 +88,30 @@ const User = () => {
     }
   };
 
-  const getTransactionStatus = async () => {
-    if (!transactionId) return alert("Please provide a transaction ID.");
+  // const getTransactionStatus = async () => {
+  //   if (!transactionId) return alert("Please provide a transaction ID.");
+  //   try {
+  //     const tx = await contract.methods.transactions(transactionId).call();
+  //     setTransactionStatus(tx.state);
+  //   } catch (error) {
+  //     console.error("Error fetching transaction status: ", error);
+  //   }
+  // };
+
+  // New function for confirming delivery by transaction ID
+  const confirmDelivery = async () => {
+    if (!deliveryTransactionId)
+      return alert("Please provide a transaction ID.");
     try {
-      const tx = await contract.methods.transactions(transactionId).call();
-      setTransactionStatus(tx.state);
+      const accounts = await web3.eth.getAccounts();
+      await contract.methods.confirmDelivery(deliveryTransactionId).send({
+        from: accounts[0],
+      });
+      alert("Delivery confirmed successfully!");
+      await fetchUserTransactions(contract);
     } catch (error) {
-      console.error("Error fetching transaction status: ", error);
+      console.error("Failed to confirm delivery: ", error);
+      alert("Error confirming delivery.");
     }
   };
 
@@ -114,10 +132,10 @@ const User = () => {
 
   return (
     <div className="user-container">
-      <h2>User Actions</h2>
+      <h2>Customer Actions</h2>
       {isConnected ? (
         <div>
-          <p>Connected Account: {account}</p>
+          <h3>Connected Account: {account}</h3>
         </div>
       ) : (
         <p>Please connect your wallet to use this dApp.</p>
@@ -132,9 +150,10 @@ const User = () => {
             <thead>
               <tr>
                 <th>Transaction ID</th>
-                <th>Merchant</th>
+                <th>Merchant address</th>
+                <th>Product ID</th>
                 <th>Amount (ETH)</th>
-                <th>State</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -142,6 +161,7 @@ const User = () => {
                 <tr key={tx.id}>
                   <td>{tx.id}</td>
                   <td>{tx.merchant}</td>
+                  <td>{tx.productId}</td>
                   <td>{web3.utils.fromWei(tx.amount, "ether")}</td>
                   <td>{getStatusLabel(tx.state)}</td>
                 </tr>
@@ -162,7 +182,7 @@ const User = () => {
         />
         <input
           type="text"
-          placeholder="Merchant Address"
+          placeholder="Merchant Address (0x1231...)"
           value={merchantAddress}
           onChange={(e) => setMerchantAddress(e.target.value)}
           className="input-field"
@@ -179,7 +199,7 @@ const User = () => {
         </button>
       </div>
 
-      <div className="check-status-section">
+      {/* <div className="check-status-section">
         <h3>Check Transaction Status</h3>
         <input
           type="text"
@@ -194,6 +214,21 @@ const User = () => {
         {transactionStatus && (
           <p>Status: {getStatusLabel(transactionStatus)}</p>
         )}
+      </div> */}
+
+      {/* New Confirm Delivery Section */}
+      <div className="confirm-delivery-section">
+        <h3>Confirm Delivery</h3>
+        <input
+          type="text"
+          placeholder="Transaction ID"
+          value={deliveryTransactionId}
+          onChange={(e) => setDeliveryTransactionId(e.target.value)}
+          className="input-field"
+        />
+        <button className="confirm-delivery-button" onClick={confirmDelivery}>
+          Confirm Delivery
+        </button>
       </div>
     </div>
   );
