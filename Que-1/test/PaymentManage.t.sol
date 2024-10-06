@@ -16,49 +16,42 @@ contract PaymentManagerTest is Test {
     }
 
     function testInitiatePayment() public {
-        
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
-        
-       
-        (address _user, address _merchant, uint256 amount, PaymentManager.TransactionState state, bool isDisputed, ) = paymentManager.transactions(0);
+
+        (address _user, address _merchant, uint256 amount, PaymentManager.TransactionState state, bool isDisputed,) =
+            paymentManager.transactions(0);
         assertEq(_user, user);
         assertEq(_merchant, merchant);
         assertEq(amount, 1 ether);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.Initiated));
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.Initiated));
         assertEq(isDisputed, false);
     }
 
     function testPaymentApprove() public {
-       
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
         vm.prank(merchant);
         paymentManager.paymentApprove(0);
 
-    
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.PaymentApproved));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.PaymentApproved));
     }
 
     function testPaymentDecline() public {
-     
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
-         (, , , PaymentManager.TransactionState stateBeforeDecline, , ) = paymentManager.transactions(0);
-         assertEq(uint(stateBeforeDecline), uint(PaymentManager.TransactionState.Initiated));
-
+        (,,, PaymentManager.TransactionState stateBeforeDecline,,) = paymentManager.transactions(0);
+        assertEq(uint256(stateBeforeDecline), uint256(PaymentManager.TransactionState.Initiated));
 
         vm.prank(merchant);
         paymentManager.paymentDecline(0);
 
-   
         assertEq(user.balance, 10 ether);
     }
 
     function testConfirmOrder() public {
-      
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
@@ -68,12 +61,11 @@ contract PaymentManagerTest is Test {
         vm.prank(merchant);
         paymentManager.confirmOrder(0);
 
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.MerchantConfirmed));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.MerchantConfirmed));
     }
 
     function testShipOrder() public {
-      
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
@@ -81,17 +73,14 @@ contract PaymentManagerTest is Test {
         paymentManager.paymentApprove(0);
         paymentManager.confirmOrder(0);
 
-       
-    
         paymentManager.shipOrder(0);
         vm.stopPrank();
 
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.Shipped));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.Shipped));
     }
 
     function testConfirmDelivery() public {
-     
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
@@ -102,19 +91,16 @@ contract PaymentManagerTest is Test {
         paymentManager.shipOrder(0);
         vm.stopPrank();
 
- 
         vm.prank(user);
         paymentManager.confirmDelivery(0);
 
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.Delivered));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.Delivered));
     }
 
     function testCompleteTransaction() public {
-      
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
-        
 
         vm.startPrank(merchant);
         paymentManager.paymentApprove(0);
@@ -128,14 +114,13 @@ contract PaymentManagerTest is Test {
         vm.prank(merchant);
         paymentManager.completeTransaction(0);
 
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-         assertEq(uint(state), uint(PaymentManager.TransactionState.Completed));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.Completed));
 
         assertEq(merchant.balance, 11 ether);
     }
 
     function testCancelTransaction() public {
-  
         vm.startPrank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
@@ -143,15 +128,13 @@ contract PaymentManagerTest is Test {
         paymentManager.cancelTransaction(0);
         vm.stopPrank();
 
-        (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
-        assertEq(uint(state), uint(PaymentManager.TransactionState.Cancelled));
+        (,,, PaymentManager.TransactionState state,,) = paymentManager.transactions(0);
+        assertEq(uint256(state), uint256(PaymentManager.TransactionState.Cancelled));
 
-     
         assertEq(user.balance, 10 ether);
     }
 
     function testOpenDispute() public {
-   
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
@@ -161,11 +144,10 @@ contract PaymentManagerTest is Test {
         paymentManager.shipOrder(0);
         vm.stopPrank();
 
-      
         vm.prank(user);
         paymentManager.openDispute(0);
 
-        (, , , , bool isDisputed, ) = paymentManager.transactions(0);
+        (,,,, bool isDisputed,) = paymentManager.transactions(0);
         assertTrue(isDisputed);
     }
 }
