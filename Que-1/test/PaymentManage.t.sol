@@ -46,6 +46,9 @@ contract PaymentManagerTest is Test {
      
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
+         (, , , PaymentManager.TransactionState stateBeforeDecline, , ) = paymentManager.transactions(0);
+         assertEq(uint(stateBeforeDecline), uint(PaymentManager.TransactionState.Initiated));
+
 
         vm.prank(merchant);
         paymentManager.paymentDecline(0);
@@ -74,13 +77,14 @@ contract PaymentManagerTest is Test {
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
-        vm.prank(merchant);
+        vm.startPrank(merchant);
         paymentManager.paymentApprove(0);
         paymentManager.confirmOrder(0);
 
        
-        vm.prank(merchant);
+    
         paymentManager.shipOrder(0);
+        vm.stopPrank();
 
         (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
         assertEq(uint(state), uint(PaymentManager.TransactionState.Shipped));
@@ -91,10 +95,12 @@ contract PaymentManagerTest is Test {
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
-        vm.prank(merchant);
+        vm.startPrank(merchant);
+
         paymentManager.paymentApprove(0);
         paymentManager.confirmOrder(0);
         paymentManager.shipOrder(0);
+        vm.stopPrank();
 
  
         vm.prank(user);
@@ -108,11 +114,13 @@ contract PaymentManagerTest is Test {
       
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
+        
 
-        vm.prank(merchant);
+        vm.startPrank(merchant);
         paymentManager.paymentApprove(0);
         paymentManager.confirmOrder(0);
         paymentManager.shipOrder(0);
+        vm.stopPrank();
 
         vm.prank(user);
         paymentManager.confirmDelivery(0);
@@ -128,11 +136,12 @@ contract PaymentManagerTest is Test {
 
     function testCancelTransaction() public {
   
-        vm.prank(user);
+        vm.startPrank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
-        vm.prank(user);
+        // vm.prank(user);
         paymentManager.cancelTransaction(0);
+        vm.stopPrank();
 
         (, , , PaymentManager.TransactionState state, , ) = paymentManager.transactions(0);
         assertEq(uint(state), uint(PaymentManager.TransactionState.Cancelled));
@@ -146,10 +155,11 @@ contract PaymentManagerTest is Test {
         vm.prank(user);
         paymentManager.initiatePayment{value: 1 ether}(merchant, "product123");
 
-        vm.prank(merchant);
+        vm.startPrank(merchant);
         paymentManager.paymentApprove(0);
         paymentManager.confirmOrder(0);
         paymentManager.shipOrder(0);
+        vm.stopPrank();
 
       
         vm.prank(user);

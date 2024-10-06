@@ -68,7 +68,8 @@ contract PaymentManager {
     function paymentDecline(uint256 id) external onlyMerchant(id) {
         require(transactions[id].state == TransactionState.Initiated, "Payment already initiated.");
         transactions[id].state = TransactionState.PaymentDeclined;
-        payable(transactions[id].user).transfer(transactions[id].amount);
+       (bool success, ) =  transactions[id].user.call{value :transactions[id].amount}("");
+        require(success, "Refund failed");
         emit PaymentDeclined(id);
     }
 
@@ -107,7 +108,8 @@ contract PaymentManager {
     function cancelTransaction(uint256 id) external onlyUser(id) {
         require(transactions[id].state == TransactionState.Initiated, "Cannot cancel transaction at this stage.");
         transactions[id].state = TransactionState.Cancelled;
-        payable(transactions[id].user).transfer(transactions[id].amount);
+        (bool success , )=(transactions[id].user).call{value :transactions[id].amount}("");
+        require(success , "failed call");
         emit TransactionCancelled(id);
     }
 
