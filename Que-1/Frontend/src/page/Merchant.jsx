@@ -132,7 +132,7 @@ function MerchantApp() {
           <h3>Connected Account: {account}</h3>
         </div>
       ) : (
-        <p>Connecting to MetaMask...</p>
+        <h3>Connecting to MetaMask...</h3>
       )}
       <div>
         <h3>Transaction Requests</h3>
