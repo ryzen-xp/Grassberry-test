@@ -138,7 +138,7 @@ const User = () => {
           <h3>Connected Account: {account}</h3>
         </div>
       ) : (
-        <p>Please connect your wallet to use this dApp.</p>
+        <h3>Please connect your wallet to use this dApp.</h3>
       )}
 
       <div className="transaction-section">
